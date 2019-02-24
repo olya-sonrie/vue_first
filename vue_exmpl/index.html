@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="app.css">
+  <title>Vue</title>
+</head>
+<body>
+  <div class="container pt-5" id="app">
+    <div class="row mb-4">
+      <div class="col">
+        <h1>Pics application</h1>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4">
+        <div class="form-group mb-4">
+          <label for="search">Find your picture</label>
+          <input
+            type="text"
+            class="form-control"
+            id="search"
+            placeholder="Name, place..."
+            v-model="search"
+          >
+        </div>
+
+        <hr>
+
+        <ul class="list-group mt-4">
+          <li
+            v-for="(pic, index) in filteredPics"
+            class="list-group-item list-group-item-action pointer"
+            v-on:click="selectPic(index)"
+            :class="{'active': selectedPicIndex === index}"
+          >
+              {{ pic.name }} - {{ pic.owner }}
+          </li>
+        </ul>
+      </div>
+
+      <div class="col-md-8 pt-3">
+        <div class="row">
+          <div class="col-md-5">
+            <h2>{{ pic.name }}</h2>
+            <img
+              v-bind:src="pic.img"
+              :alt="pic.name"
+              class="rounded detailed-img">
+          </div>
+          <div class="col-md-7">
+            <h5 class="pt-3">Picture details</h5>
+            <ul>
+              <li>Title - <strong>{{ pic.name }}</strong></li>
+              <li>Year - <strong>{{ pic.year }}</strong></li>
+              <li>Owner - <strong>{{ pic.owner }}</strong></li>
+            </ul>
+
+            <div class="phone-block">
+              <transition name="phone">
+                <p v-if="phoneVisibility">{{ pic.phone }}</p>
+              </transition>
+            </div>
+
+            <button
+              class="btn btn-outline-success mr-3"
+              @click="phoneVisibility = !phoneVisibility"
+              >{{ phoneBtnText }}</button>
+            <button class="btn btn-primary" @click="modalVisibility = true">Buy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row pt-4" v-if="logs.length !== 0">
+      <div class="col-md-12">
+        <ul class="list-group">
+          <li
+            v-for="log in logs"
+            class="list-group-item"
+            :class="{
+              'list-group-item-secondary': log.type === 'cnl',
+              'list-group-item-success': log.type === 'ok'
+            }"
+          >
+            {{ log.text }} {{ log.date }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <transition name="modal">
+      <div class="modal fade show" v-if="modalVisibility" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Do you want to buy this pic?</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+                @click="modalVisibility = false"
+                >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>Current pic - <strong>{{ pic.name }}</strong></p>
+
+              <ul>
+                <li>Title - <strong>{{ pic.name }}</strong></li>
+                <li>Year - <strong>{{ pic.year }}</strong></li>
+                <li>Owner - <strong>{{ pic.owner }}</strong></li>
+              </ul>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+                @click="cancelOrder"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                @click="newOrder"
+              >
+                Buy
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <transition name="fade">
+      <div class="modal-backdrop fade show" v-if="modalVisibility"></div>
+    </transition>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.6/dist/vue.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
